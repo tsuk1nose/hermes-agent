@@ -1105,6 +1105,23 @@ class TestWebServerEndpoints:
         )
         assert resp.status_code == 401
 
+    def test_get_media_uses_the_requested_profile_media_root(self):
+        from hermes_constants import get_hermes_home
+
+        image = get_hermes_home() / "profiles" / "research" / "images" / "history.png"
+        image.parent.mkdir(parents=True)
+        image.write_bytes(b"\x89PNG\r\n\x1a\nprofile-image")
+
+        outside = self.client.get("/api/media", params={"path": str(image)})
+        scoped = self.client.get(
+            "/api/media",
+            params={"path": str(image), "profile": "research"},
+        )
+
+        assert outside.status_code == 403
+        assert scoped.status_code == 200
+        assert scoped.json()["data_url"].startswith("data:image/png;base64,")
+
     # ── POST /api/chat/image-upload (browser clipboard/drop images) ─────
 
 

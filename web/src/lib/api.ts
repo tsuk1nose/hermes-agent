@@ -394,6 +394,10 @@ export const api = {
         profile,
       ),
     ),
+  getMedia: (path: string, profile = getManagementProfile()) =>
+    fetchJSON<{ data_url: string }>(
+      appendProfileParam(`/api/media?path=${encodeURIComponent(path)}`, profile),
+    ),
   getSessionDetail: (id: string, profile = getManagementProfile()) =>
     fetchJSON<SessionInfo>(
       appendProfileParam(`/api/sessions/${encodeURIComponent(id)}`, profile),

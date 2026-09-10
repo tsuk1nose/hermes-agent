@@ -37,6 +37,7 @@ router = APIRouter()
 
 # Late-bound so a test's monkeypatch on the owning module wins at call time.
 _profile_scope = late("_profile_scope", "hermes_cli.web_server_profiles")
+_config_profile_scope = late("_config_profile_scope", "hermes_cli.web_server_profiles")
 get_hermes_home = late("get_hermes_home", "hermes_cli.config")
 load_config = late("load_config", "hermes_cli.config")
 # Image types GET /api/media serves — extension-allowlisted so an authenticated
@@ -239,27 +240,31 @@ def _media_serve_roots() -> list[Path]:
 
 
 @router.get("/api/media")
-async def get_media(path: str):
+async def get_media(path: str, profile: Optional[str] = None):
     """Return a gateway-local image as a base64 data URL for remote clients
     that can't read this machine's disk. Auth-gated; restricted to the image
     allowlist, a size cap AND the resolved (symlink-safe) media roots."""
-    try:
-        target = Path(path).expanduser().resolve()
-    except (OSError, RuntimeError):
-        raise HTTPException(status_code=400, detail="Invalid path")
+    def _read():
+        with _config_profile_scope(profile):
+            try:
+                target = Path(path).expanduser().resolve()
+            except (OSError, RuntimeError):
+                raise HTTPException(status_code=400, detail="Invalid path")
 
-    if target.suffix.lower() not in _MEDIA_CONTENT_TYPES:
-        raise HTTPException(status_code=415, detail="Unsupported media type")
-    roots = _media_serve_roots()
-    if not any(target == root or root in target.parents for root in roots):
-        raise HTTPException(status_code=403, detail="Path outside media roots")
-    if not target.is_file():
-        raise HTTPException(status_code=404, detail="File not found")
-    if target.stat().st_size > _MEDIA_MAX_BYTES:
-        raise HTTPException(status_code=413, detail="File too large")
+            if target.suffix.lower() not in _MEDIA_CONTENT_TYPES:
+                raise HTTPException(status_code=415, detail="Unsupported media type")
+            roots = _media_serve_roots()
+            if not any(target == root or root in target.parents for root in roots):
+                raise HTTPException(status_code=403, detail="Path outside media roots")
+            if not target.is_file():
+                raise HTTPException(status_code=404, detail="File not found")
+            if target.stat().st_size > _MEDIA_MAX_BYTES:
+                raise HTTPException(status_code=413, detail="File too large")
 
-    encoded = base64.b64encode(target.read_bytes()).decode("ascii")
-    return {"data_url": f"data:{_MEDIA_CONTENT_TYPES[target.suffix.lower()]};base64,{encoded}"}
+            encoded = base64.b64encode(target.read_bytes()).decode("ascii")
+            return {"data_url": f"data:{_MEDIA_CONTENT_TYPES[target.suffix.lower()]};base64,{encoded}"}
+
+    return await asyncio.to_thread(_read)
 
 
 def _decode_data_url(data_url: str) -> tuple[bytes, str]:

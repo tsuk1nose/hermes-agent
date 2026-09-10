@@ -96,6 +96,9 @@ const ChannelsPage = lazy(() => import("@/pages/ChannelsPage"));
 const WebhooksPage = lazy(() => import("@/pages/WebhooksPage"));
 const SystemPage = lazy(() => import("@/pages/SystemPage"));
 const ChatPage = lazy(() => import("@/pages/ChatPage"));
+const WebChatPage = lazy(() =>
+  import("@/pages/WebChatPage").then((m) => ({ default: m.WebChatPage })),
+);
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useI18n } from "@/i18n";
@@ -135,6 +138,13 @@ function UnknownRouteFallback({ pluginsLoading }: { pluginsLoading: boolean }) {
   return <Navigate to="/sessions" replace />;
 }
 
+const WEB_CHAT_NAV_ITEM: NavItem = {
+  path: "/web-chat",
+  labelKey: "webChat",
+  label: "Web Chat",
+  icon: Sparkles,
+};
+
 const CHAT_NAV_ITEM: NavItem = {
   path: "/chat",
   labelKey: "chat",
@@ -155,6 +165,7 @@ const CHAT_NAV_ITEM: NavItem = {
  */
 const BUILTIN_ROUTES_CORE: Record<string, ComponentType> = {
   "/": RootRedirect,
+  "/web-chat": WebChatPage,
   "/sessions": SessionsPage,
   "/files": FilesPage,
   "/analytics": AnalyticsPage,
@@ -400,6 +411,8 @@ export default function App() {
   const isDocsRoute = pathname === "/docs" || pathname === "/docs/";
   const normalizedPath = pathname.replace(/\/$/, "") || "/";
   const isChatRoute = normalizedPath === "/chat";
+  const isWebChatRoute = normalizedPath === "/web-chat";
+  const isConversationRoute = isChatRoute || isWebChatRoute;
   const embeddedChat = isDashboardEmbeddedChatEnabled();
   // Defer mounting the persistent chat host (and its xterm chunk) until the
   // user has actually opened /chat at least once. Sticky after that so the
@@ -458,8 +471,8 @@ export default function App() {
 
   const builtinNav = useMemo(() => {
     const base = embeddedChat
-      ? [CHAT_NAV_ITEM, ...BUILTIN_NAV_REST]
-      : BUILTIN_NAV_REST;
+      ? [WEB_CHAT_NAV_ITEM, CHAT_NAV_ITEM, ...BUILTIN_NAV_REST]
+      : [WEB_CHAT_NAV_ITEM, ...BUILTIN_NAV_REST];
     return showTokenAnalytics
       ? base
       : base.filter((n) => n.path !== "/analytics");
@@ -756,10 +769,10 @@ export default function App() {
               className={cn(
                 "relative z-2 flex min-w-0 min-h-0 flex-1 flex-col",
                 "px-3 sm:px-6",
-                isChatRoute
+                isConversationRoute
                   ? "pb-0 pt-1 sm:pt-2 lg:pt-4"
                   : "pt-2 sm:pt-4 lg:pt-6",
-                isDocsRoute && "min-h-0 flex-1",
+                (isDocsRoute || isWebChatRoute) && "min-h-0 flex-1",
               )}
             >
               <PluginSlot name="pre-main" />
@@ -768,7 +781,7 @@ export default function App() {
                   "w-full min-w-0",
                   !isChatRoute &&
                     "pb-[calc(2rem+env(safe-area-inset-bottom,0px))] lg:pb-8",
-                  (isDocsRoute || isChatRoute) &&
+                  (isDocsRoute || isConversationRoute) &&
                     "min-h-0 flex flex-1 flex-col",
                 )}
               >
