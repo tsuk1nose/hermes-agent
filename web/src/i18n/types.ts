@@ -90,6 +90,8 @@ export interface Translations {
     nav: {
       analytics: string;
       chat: string;
+      /** Optional until every locale has translated the fork-only Web Chat label. */
+      webChat?: string;
       config: string;
       cron: string;
       documentation: string;

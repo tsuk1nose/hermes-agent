@@ -2,6 +2,7 @@ import type { Translations } from "@/i18n/types";
 
 const BUILTIN: Record<string, keyof Translations["app"]["nav"]> = {
   "/chat": "chat",
+  "/web-chat": "webChat",
   "/sessions": "sessions",
   "/analytics": "analytics",
   "/models": "models",
@@ -42,7 +43,7 @@ export function resolvePageTitle(
   }
   const key = BUILTIN[normalized];
   if (key) {
-    return t.app.nav[key];
+    return t.app.nav[key] ?? (key === "webChat" ? "Web Chat" : key);
   }
   const literal = BUILTIN_LITERAL[normalized];
   if (literal) {

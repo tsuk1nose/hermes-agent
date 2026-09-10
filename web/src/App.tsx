@@ -96,6 +96,9 @@ const ChannelsPage = lazy(() => import("@/pages/ChannelsPage"));
 const WebhooksPage = lazy(() => import("@/pages/WebhooksPage"));
 const SystemPage = lazy(() => import("@/pages/SystemPage"));
 const ChatPage = lazy(() => import("@/pages/ChatPage"));
+const WebChatPage = lazy(() =>
+  import("@/pages/WebChatPage").then((m) => ({ default: m.WebChatPage })),
+);
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useI18n } from "@/i18n";
@@ -135,6 +138,13 @@ function UnknownRouteFallback({ pluginsLoading }: { pluginsLoading: boolean }) {
   return <Navigate to="/sessions" replace />;
 }
 
+const WEB_CHAT_NAV_ITEM: NavItem = {
+  path: "/web-chat",
+  labelKey: "webChat",
+  label: "Web Chat",
+  icon: Sparkles,
+};
+
 const CHAT_NAV_ITEM: NavItem = {
   path: "/chat",
   labelKey: "chat",
@@ -155,6 +165,7 @@ const CHAT_NAV_ITEM: NavItem = {
  */
 const BUILTIN_ROUTES_CORE: Record<string, ComponentType> = {
   "/": RootRedirect,
+  "/web-chat": WebChatPage,
   "/sessions": SessionsPage,
   "/files": FilesPage,
   "/analytics": AnalyticsPage,
@@ -458,8 +469,8 @@ export default function App() {
 
   const builtinNav = useMemo(() => {
     const base = embeddedChat
-      ? [CHAT_NAV_ITEM, ...BUILTIN_NAV_REST]
-      : BUILTIN_NAV_REST;
+      ? [WEB_CHAT_NAV_ITEM, CHAT_NAV_ITEM, ...BUILTIN_NAV_REST]
+      : [WEB_CHAT_NAV_ITEM, ...BUILTIN_NAV_REST];
     return showTokenAnalytics
       ? base
       : base.filter((n) => n.path !== "/analytics");
