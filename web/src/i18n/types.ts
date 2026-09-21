@@ -28,6 +28,9 @@ export interface Translations {
     delete: string;
     refresh: string;
     retry: string;
+    /** Optional — English fallback until translated. "{what}" = the noun that failed to load. */
+    loadFailed?: string;
+    loadFailedDetails?: string;
     search: string;
     loading: string;
     create: string;
@@ -81,7 +84,9 @@ export interface Translations {
     activeSessionsLabel: string;
     gatewayStatusLabel: string;
     gatewayStrip: {
+      degraded?: string;
       failed: string;
+      heartbeatStale?: string;
       off: string;
       running: string;
       starting: string;
@@ -268,6 +273,9 @@ export interface Translations {
 
   // ── Cron page ──
   cron: {
+    /** Optional — English fallback until translated. */
+    loadWhat?: string;
+    scriptRequired?: string;
     confirmDeleteMessage: string;
     confirmDeleteTitle: string;
     newJob: string;
@@ -316,6 +324,8 @@ export interface Translations {
     noJobs: string;
     last: string;
     next: string;
+    overdueSince?: string;
+    schedulerLastTicked?: string;
     pause: string;
     resume: string;
     triggerNow: string;
@@ -368,6 +378,20 @@ export interface Translations {
     versionBadge: string;
     showInSidebar: string;
     hideFromSidebar: string;
+    // Catalog section (en-only fallback convention — optional keys).
+    catalogHeading?: string;
+    catalogHint?: string;
+    catalogSearchPlaceholder?: string;
+    catalogEmpty?: string;
+    catalogEmptyDocsLink?: string;
+    catalogInstallBtn?: string;
+    catalogInstalledBadge?: string;
+    catalogUpdateBtn?: string;
+    catalogRemovedBadge?: string;
+    catalogConfirmTitle?: string;
+    catalogConfirmInstallNote?: string;
+    catalogRequiresEnv?: string;
+    removedFromCatalog?: string;
   };
 
   // ── Profiles page ──
@@ -441,6 +465,10 @@ export interface Translations {
   skills: {
     title: string;
     searchPlaceholder: string;
+    /** Optional — English fallback until translated. */
+    loadWhat?: string;
+    browseHub?: string;
+    createSkill?: string;
     enabledOf: string;
     all: string;
     categories: string;
