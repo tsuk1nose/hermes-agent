@@ -10,7 +10,8 @@ import type { ApprovalChoice, ApprovalRequest } from "@/components/web-chat/Appr
 import { ModelPickerDialog } from "@/components/ModelPickerDialog";
 import { GatewayClient } from "@/lib/gatewayClient";
 import { api } from "@/lib/api";
-import { executeSlash } from "@/lib/slashExec";
+import { looksLikeSlashCommand } from "@hermes/shared";
+import { executeWebChatSlash } from "@/lib/web-chat-slash";
 import { extractHistoryImages } from "@/lib/web-chat-history";
 import { useProfileScope } from "@/contexts/useProfileScope";
 import { usePageHeader } from "@/contexts/usePageHeader";
@@ -144,6 +145,7 @@ export function WebChatPage() {
   const { setTitle } = usePageHeader();
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [draft, setDraft] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [connected, setConnected] = useState(false);
@@ -511,7 +513,7 @@ export function WebChatPage() {
   }, [activeSessionId, connected, profile]);
 
   // Send message
-  const handleSend = async (text: string, attachments?: ComposerAttachment[]) => {
+  const handleSend = async (text: string, attachments?: ComposerAttachment[], display?: string) => {
     const gw = gwRef.current;
     if (!gw || !connected) return;
     setErrorMessage(null);
@@ -539,13 +541,14 @@ export function WebChatPage() {
       }
     }
 
-    if (text.startsWith("/") && !attachments?.length) {
-      await executeSlash({
+    if (!display && looksLikeSlashCommand(text) && !attachments?.length) {
+      await executeWebChatSlash({
         command: text,
         sessionId: targetSid,
         gw,
         callbacks: {
-          send: (message) => handleSend(message),
+          send: (message, label) => handleSend(message, undefined, label),
+          prefill: setDraft,
           sys: (content) => setMessages((prev) => [
             ...prev,
             { id: `system-${crypto.randomUUID()}`, role: "system", content, timestamp: Date.now() },
@@ -592,7 +595,7 @@ export function WebChatPage() {
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
       role: "user",
-      content: text,
+      content: display ?? text,
       attachments: attachments?.map((a) => ({ name: a.name, url: a.url, type: a.type })),
       timestamp: Date.now(),
     };
@@ -750,10 +753,14 @@ export function WebChatPage() {
 
         {/* Composer Bar */}
         <Composer
+          input={draft}
+          onInputChange={setDraft}
           onSend={handleSend}
           onStop={handleStop}
           isGenerating={isGenerating}
           gw={gwRef.current}
+          sessionId={runtimeSessionId ?? undefined}
+          profile={profile}
           modelName={modelName}
           onOpenModelPicker={() => setModelPickerOpen(true)}
           disabled={!connected || Boolean(activeSessionId && !runtimeSessionId)}

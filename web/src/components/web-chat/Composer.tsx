@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback, type ChangeEvent, type ClipboardEvent, type DragEvent } from "react";
 import { ArrowUp, Square, Paperclip, X, Cpu } from "lucide-react";
 import { Button } from "@nous-research/ui/ui/components/button";
-import { SlashPopover, type SlashPopoverHandle } from "@/components/SlashPopover";
+import { SlashPopover, type SlashPopoverHandle } from "./SlashPopover";
 import type { GatewayClient } from "@/lib/gatewayClient";
 import { cn } from "@/lib/utils";
 
@@ -13,10 +13,14 @@ export interface ComposerAttachment {
 }
 
 interface ComposerProps {
+  input: string;
+  onInputChange: (input: string) => void;
   onSend: (text: string, attachments?: ComposerAttachment[]) => void;
   onStop?: () => void;
   isGenerating?: boolean;
   gw: GatewayClient | null;
+  sessionId?: string;
+  profile: string;
   modelName?: string;
   onOpenModelPicker?: () => void;
   placeholder?: string;
@@ -26,10 +30,14 @@ interface ComposerProps {
 }
 
 export function Composer({
+  input,
+  onInputChange: setInput,
   onSend,
   onStop,
   isGenerating,
   gw,
+  sessionId,
+  profile,
   modelName,
   onOpenModelPicker,
   placeholder = "Message Hermes Agent... (type / for commands)",
@@ -37,7 +45,6 @@ export function Composer({
   className,
   inputRef: externalInputRef,
 }: ComposerProps) {
-  const [input, setInput] = useState("");
   const [attachments, setAttachments] = useState<ComposerAttachment[]>([]);
   const internalInputRef = useRef<HTMLTextAreaElement>(null);
   const inputRef = externalInputRef || internalInputRef;
@@ -131,6 +138,8 @@ export function Composer({
         ref={slashRef}
         input={input}
         gw={gw}
+        sessionId={sessionId}
+        profile={profile}
         onApply={(cmd) => {
           setInput(cmd + " ");
           inputRef.current?.focus();
