@@ -49,7 +49,7 @@ function formatToolSummary(name: string, params?: Record<string, any> | string):
 }
 
 export function ToolStepCard({ execution, className }: ToolStepCardProps) {
-  const [expanded, setExpanded] = useState(execution.status === "running");
+  const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
   const Icon = getToolIcon(execution.name);
 
@@ -77,6 +77,7 @@ export function ToolStepCard({ execution, className }: ToolStepCardProps) {
     >
       <div
         role="button"
+        aria-expanded={expanded}
         tabIndex={0}
         onClick={() => setExpanded(!expanded)}
         onKeyDown={(e) => {

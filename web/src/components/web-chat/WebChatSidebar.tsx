@@ -8,14 +8,13 @@ import {
   X,
   MessageSquare,
   PanelLeftClose,
-  PanelLeftOpen,
 } from "lucide-react";
 import { Button } from "@nous-research/ui/ui/components/button";
 import { Spinner } from "@nous-research/ui/ui/components/spinner";
 import { api, type SessionInfo } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
-interface WebChatSidebarProps {
+export interface WebChatSidebarProps {
   activeSessionId: string | null;
   onSelectSession: (sessionId: string) => void;
   onNewChat: () => void;
@@ -160,29 +159,7 @@ export function WebChatSidebar({
     return groups;
   }, [sessions]);
 
-  if (collapsed) {
-    return (
-      <div className={cn("flex h-full min-h-0 w-14 shrink-0 flex-col items-center gap-3 overflow-hidden border-r border-border/60 bg-muted/20 py-3", className)}>
-        <Button
-          ghost
-          size="sm"
-          onClick={onToggleCollapse}
-          className="w-9 h-9 p-0 rounded-lg text-muted-foreground hover:text-foreground"
-          title="展开侧边栏"
-        >
-          <PanelLeftOpen className="w-4 h-4" />
-        </Button>
-        <Button
-          size="sm"
-          onClick={onNewChat}
-          className="w-9 h-9 p-0 rounded-lg shadow-xs"
-          title="新建对话"
-        >
-          <MessageSquarePlus className="w-4 h-4" />
-        </Button>
-      </div>
-    );
-  }
+  if (collapsed) return null;
 
   const renderGroup = (title: string, list: SessionInfo[]) => {
     if (list.length === 0) return null;
@@ -312,9 +289,9 @@ export function WebChatSidebar({
         {onToggleCollapse && (
           <Button
             ghost
-            size="sm"
+            size="icon"
             onClick={onToggleCollapse}
-            className="w-9 h-9 p-0 rounded-lg text-muted-foreground hover:text-foreground"
+            className="w-9 h-9 p-0 rounded-lg text-muted-foreground hover:text-foreground [&>svg]:size-4"
             title="收起侧边栏"
           >
             <PanelLeftClose className="w-4 h-4" />

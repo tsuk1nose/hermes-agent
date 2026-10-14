@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Brain, ChevronDown, ChevronRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -9,12 +9,7 @@ interface ThinkingBlockProps {
 }
 
 export function ThinkingBlock({ content, isThinking, className }: ThinkingBlockProps) {
-  // Open while actively thinking, closed once thinking is complete
-  const [expanded, setExpanded] = useState(Boolean(isThinking));
-
-  useEffect(() => {
-    setExpanded(Boolean(isThinking));
-  }, [isThinking]);
+  const [expanded, setExpanded] = useState(false);
 
   if (!content && !isThinking) return null;
 
@@ -22,6 +17,7 @@ export function ThinkingBlock({ content, isThinking, className }: ThinkingBlockP
     <div className={cn("my-2 rounded-lg border border-border/40 bg-muted/20 text-xs overflow-hidden", className)}>
       <button
         type="button"
+        aria-expanded={expanded}
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center gap-2 px-3 py-1.5 text-muted-foreground hover:text-foreground transition-colors select-none text-left"
       >

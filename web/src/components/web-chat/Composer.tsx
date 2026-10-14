@@ -193,8 +193,8 @@ export function Composer({
         />
 
         {/* Bottom controls bar */}
-        <div className="flex items-center justify-between px-3 py-2 border-t border-border/30 bg-muted/20 text-xs">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 px-3 py-2 border-t border-border/30 bg-muted/20 text-xs">
+          <div className="flex min-w-0 flex-1 items-center gap-2">
             <input
               ref={fileInputRef}
               type="file"
@@ -211,49 +211,51 @@ export function Composer({
             <Button
               type="button"
               ghost
-              size="sm"
-              className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground rounded-lg"
+              size="icon"
+              className="inline-flex h-7 w-7 shrink-0 items-center justify-center p-0 text-muted-foreground hover:text-foreground rounded-lg [&>svg]:size-4"
               title="Attach files or images"
+              aria-label="Attach files or images"
               onClick={() => fileInputRef.current?.click()}
             >
-              <Paperclip className="w-4 h-4" />
+              <Paperclip className="w-4 h-4 shrink-0" />
             </Button>
 
             {modelName && (
               <button
                 type="button"
                 onClick={onOpenModelPicker}
-                className="flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-mono text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors border border-border/40"
+                className="flex min-w-0 items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-mono text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors border border-border/40"
               >
-                <Cpu className="w-3 h-3 text-primary" />
+                <Cpu className="w-3 h-3 shrink-0 text-primary" />
                 <span className="truncate max-w-[130px]">{modelName}</span>
               </button>
             )}
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex shrink-0 items-center gap-1.5">
             {isGenerating ? (
               <Button
                 type="button"
                 size="sm"
                 destructive
                 onClick={onStop}
-                className="h-7 px-2.5 rounded-lg text-xs gap-1.5 font-medium animate-pulse"
+                className="inline-flex h-7 shrink-0 items-center justify-center px-2.5 rounded-lg text-xs gap-1.5 font-medium animate-pulse"
                 title="Stop generation"
               >
-                <Square className="w-3 h-3 fill-current" />
+                <Square className="w-3 h-3 shrink-0 fill-current" />
                 <span>Stop</span>
               </Button>
             ) : (
               <Button
                 type="button"
-                size="sm"
+                size="icon"
                 disabled={(!input.trim() && attachments.length === 0) || disabled}
                 onClick={handleSend}
-                className="h-7 w-7 p-0 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-40"
+                className="inline-flex h-7 w-7 shrink-0 items-center justify-center p-0 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-40 [&>svg]:size-4"
                 title="Send prompt (Enter)"
+                aria-label="Send prompt"
               >
-                <ArrowUp className="w-4 h-4" />
+                <ArrowUp className="w-4 h-4 shrink-0" />
               </Button>
             )}
           </div>

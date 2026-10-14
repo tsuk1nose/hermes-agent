@@ -8,7 +8,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import type { GatewayClient } from "@/lib/gatewayClient";
 import type { ModelOptionProvider, ModelOptionsResult } from "@hermes/shared";
 import { Check, RefreshCw, Search, X } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router";
 import { cn, themedBody } from "@/lib/utils";
@@ -79,6 +79,8 @@ interface Props {
 
   onClose(): void;
   title?: string;
+  /** Related controls shown below the current model, outside the scrolling catalog. */
+  settings?: ReactNode;
   /** If true, hides "Persist globally" checkbox — always saves to config.yaml. */
   alwaysGlobal?: boolean;
   /**
@@ -384,6 +386,12 @@ export function ModelPickerDialog(props: Props) {
             })}
           </p>
         </header>
+
+        {props.settings && (
+          <div className="shrink-0 border-b border-border px-2 py-1">
+            {props.settings}
+          </div>
+        )}
 
         <div className="px-5 pt-3 pb-2 border-b border-border">
           <div className="relative">

@@ -89,10 +89,10 @@ export function MessageStream({
       {showScrollBottom && (
         <Button
           type="button"
-          size="sm"
+          size="icon"
           outlined
           onClick={() => scrollToBottom("smooth")}
-          className="absolute bottom-4 right-8 rounded-full w-8 h-8 p-0 bg-background/90 shadow-md border-border/80 text-foreground hover:bg-background z-10"
+          className="absolute bottom-4 right-8 rounded-full w-8 h-8 p-0 bg-background/90 shadow-md border-border/80 text-foreground hover:bg-background z-10 [&>svg]:size-4"
           title="Scroll to bottom"
         >
           <ArrowDown className="w-4 h-4" />
