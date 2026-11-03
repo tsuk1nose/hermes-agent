@@ -137,10 +137,17 @@ export interface Translations {
     sharedMetricsBody?: string;
     sharedMetricsReaskBody?: string;
     sharedMetricsShare?: string;
-    sharedMetricsLocal?: string;
     sharedMetricsOff?: string;
     sharedMetricsDetails?: string;
     sharedMetricsSaveFailed?: string;
+  };
+
+  // ── System page: Memory section ──
+  systemMemory: {
+    activeProvider: string;
+    noProvider: string;
+    builtinLayer: string;
+    builtinNote: string;
   };
 
   // ── Status page ──
@@ -395,6 +402,10 @@ export interface Translations {
     updateGit: string;
     /** Optional: locales without it fall back to the English body at the call site. */
     updateConsentBody?: (name: string, sha: string) => string;
+    /** Optional, English fallback: the scan rated an update caution; confirming retries with force. */
+    updateScanBody?: (name: string, count: number) => string;
+    /** Optional, English fallback: the scan rated an update dangerous; never overridable. */
+    updateScanBlocked?: (name: string) => string;
     versionBadge: string;
     showInSidebar: string;
     hideFromSidebar: string;
